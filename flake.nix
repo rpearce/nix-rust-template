@@ -62,8 +62,9 @@
         # `nix develop`
         devShell = pkgs.mkShell {
           buildInputs = [
-            pkgs.rust-analyzer
+            pkgs.cargo-edit
             pkgs.cargo-watch
+            pkgs.rust-analyzer
           ];
           nativeBuildInputs = [ rust-dev ];
         };

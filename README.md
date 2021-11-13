@@ -28,6 +28,9 @@ defaults are included.
     IDE support
   * [`cargo-watch`](https://github.com/watchexec/cargo-watch): Watches over your
     project's source for changes, and runs Cargo commands when they occur
+  * [`cargo-edit`](https://github.com/killercup/cargo-edit): Extends Cargo to
+    allow you to add, remove, and upgrade dependencies by modifying your
+    `Cargo.toml` file from the command line
 * [`naersk`](https://github.com/nix-community/naersk): Nix support for building
   cargo crates
 * [`oxalica/rust-overlay`](https://github.com/oxalica/rust-overlay/): Pure and
