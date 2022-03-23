@@ -4,7 +4,7 @@
   nixConfig.bash-prompt = "[nix]λ ";
 
   inputs = {
-    nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
+    nixpkgs.url = "github:NixOS/nixpkgs/nixpkgs-unstable";
 
     naersk = {
       url = "github:nmattia/naersk";
@@ -53,11 +53,26 @@
         };
         defaultPackage = packages.nix-rust-template;
 
-        # `nix run`
-        apps.nix-rust-template = flake-utils.lib.mkApp {
+        # `nix run` or `nix run .#app`
+        apps.app = flake-utils.lib.mkApp {
           drv = packages.nix-rust-template;
         };
-        defaultApp = apps.nix-rust-template;
+        defaultApp = apps.app;
+
+        # `nix run .#watch`
+        apps.watch = flake-utils.lib.mkApp {
+          drv = pkgs.writeShellApplication {
+            name = "watch";
+            runtimeInputs = [
+              pkgs.cargo-watch
+              pkgs.gcc
+              rust
+            ];
+            text = ''
+              cargo-watch -w "./src/" -x "run"
+            '';
+          };
+        };
 
         # `nix develop`
         devShell = pkgs.mkShell {

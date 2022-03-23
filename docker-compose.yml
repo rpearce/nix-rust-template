@@ -1,0 +1,8 @@
+services:
+  app:
+    build: .
+    volumes:
+      - .:/service
+      - nix-rust-vol:/var/nix-rust-vol
+volumes:
+  nix-rust-vol: {}
