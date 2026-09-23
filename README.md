@@ -19,7 +19,7 @@ A reasonable way to start developing a reproducible
 * **A dev shell** with `rust-analyzer`, and
   [bacon](https://github.com/Canop/bacon) for rebuild-on-save.
 * **[direnv](https://direnv.net) support** via [`.envrc`](./.envrc).
-* **CI** on Linux and macOS with GitHub Actions, plus a weekly pull request
+* **CI** on Linux and macOS with GitHub Actions, plus a monthly pull request
   that updates `flake.lock`.
 * **Docker, two ways.** A dev container for people without Nix, and a minimal
   production image via `nix build .#docker`.
@@ -109,12 +109,13 @@ servers, use `bacon run-long` instead of `bacon run`.
 
 ## CI
 
-[`ci.yml`](./.github/workflows/ci.yml) runs `nix flake check` and `nix build`
-on Ubuntu and macOS, caching the Nix store between runs.
+[`ci.yml`](./.github/workflows/ci.yml) runs `nix flake check` on Ubuntu and
+macOS, builds the production Docker image on Ubuntu, and caches the Nix store
+between runs.
 
 [`update-flake-lock.yml`](./.github/workflows/update-flake-lock.yml) opens a
-pull request with fresh flake inputs every Monday. It needs "Allow GitHub
-Actions to create and approve pull requests" enabled under the repository's
-Actions settings. Pull requests opened with the default token do not trigger
-CI; pass a personal access token or GitHub App token to the action if you want
-that.
+pull request with fresh flake inputs on the first of every month. It needs
+"Allow GitHub Actions to create and approve pull requests" enabled under the
+repository's Actions settings. Pull requests opened with the default token do
+not trigger CI; pass a personal access token or GitHub App token to the action
+if you want that.

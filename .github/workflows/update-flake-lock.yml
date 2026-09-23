@@ -1,6 +1,6 @@
 name: Update flake.lock
 
-# Opens a pull request with updated flake inputs every week, so the template
+# Opens a pull request with updated flake inputs every month, so the template
 # never silently goes stale.
 #
 # Two things to know:
@@ -12,7 +12,7 @@ name: Update flake.lock
 
 on:
   schedule:
-    - cron: "0 6 * * 1" # Mondays at 06:00 UTC
+    - cron: "0 6 1 * *" # 1st of every month at 06:00 UTC
   workflow_dispatch:
 
 jobs:
