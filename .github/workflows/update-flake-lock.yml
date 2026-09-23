@@ -1,0 +1,34 @@
+name: Update flake.lock
+
+# Opens a pull request with updated flake inputs every month, so the template
+# never silently goes stale.
+#
+# Two things to know:
+# - Under Settings > Actions > General, "Allow GitHub Actions to create and
+#   approve pull requests" must be enabled.
+# - Pull requests opened with the default GITHUB_TOKEN do not trigger other
+#   workflows, so CI will not run on them automatically. Pass a personal
+#   access token or GitHub App token via the `token` input to change that.
+
+on:
+  schedule:
+    - cron: "0 6 1 * *" # 1st of every month at 06:00 UTC
+  workflow_dispatch:
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: cachix/install-nix-action@v31
+
+      - uses: DeterminateSystems/update-flake-lock@v29
+        with:
+          pr-title: "Update flake.lock"
+          pr-labels: |
+            dependencies
+            automated

@@ -1,0 +1,52 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+# Cancel in-progress runs for the same branch or pull request.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  check:
+    name: nix flake check (${{ matrix.os }})
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest]
+    runs-on: ${{ matrix.os }}
+    permissions:
+      contents: read
+      # Needed by cache-nix-action to purge old caches.
+      actions: write
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: cachix/install-nix-action@v31
+
+      # Cache the Nix store between runs so the toolchain and dependencies are
+      # only downloaded when the inputs change.
+      - uses: nix-community/cache-nix-action@v7
+        with:
+          primary-key: nix-${{ runner.os }}-${{ hashFiles('**/*.nix', '**/flake.lock', '**/rust-toolchain.toml', '**/Cargo.lock') }}
+          restore-prefixes-first-match: nix-${{ runner.os }}-
+          gc-max-store-size-linux: 2G
+          gc-max-store-size-macos: 2G
+          purge: true
+          purge-prefixes: nix-${{ runner.os }}-
+          purge-created: 0
+          purge-primary-key: never
+
+      - run: nix flake check --print-build-logs
+
+      # Containers are Linux, so the production image only exists there.
+      - if: runner.os == 'Linux'
+        run: nix build .#docker --print-build-logs
+
+      # Record the dev shell in a profile. That makes it a garbage-collector
+      # root, so the toolchain survives the store cleanup that runs before the
+      # cache is saved.
+      - run: nix develop --profile "$RUNNER_TEMP/dev-shell" --command true
