@@ -1,2 +1,12 @@
+# Nix build outputs
 /result
+/result-*
+
+# direnv cache
+/.direnv/
+
+# Cargo
 /target
+**/*.rs.bk
+*.pdb
+rustc-ice-*.txt

@@ -1,0 +1,12 @@
+# Single source of truth for the Rust toolchain.
+#
+# rustup reads this file directly. The Nix flake reads it via
+# `rust-bin.fromRustupToolchainFile`, so both paths get the same toolchain.
+# Nix users are pinned by flake.lock (the rust-overlay revision decides what
+# "stable" means); rustup users track the current stable release.
+[toolchain]
+channel = "stable"
+# "minimal" skips the offline HTML docs (`rustup doc`), which more than halves
+# the download. Everything a project needs is listed explicitly below.
+profile = "minimal"
+components = ["clippy", "rustfmt", "rust-src", "rust-analyzer"]

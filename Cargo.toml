@@ -1,8 +1,22 @@
 [package]
 name = "nix-rust-template"
 version = "0.1.0"
-edition = "2021"
+edition = "2024"
+# The minimum Rust version this crate supports. Bump it alongside the
+# toolchain; lower it if you need to support older compilers.
+rust-version = "1.98"
+description = "A reasonable way to start developing a reproducible Rust project"
+license = "MIT"
+repository = "https://github.com/rpearce/nix-rust-template"
+publish = false
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
+
+[lints.rust]
+unsafe_code = "forbid"
+
+[lints.clippy]
+# Opinionated but useful. Remove this line for clippy's default lint set only.
+pedantic = { level = "warn", priority = -1 }

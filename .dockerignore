@@ -1,2 +1,5 @@
+.direnv
 .git
+result
+result-*
 target

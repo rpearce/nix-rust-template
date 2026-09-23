@@ -1,8 +1,25 @@
 services:
   app:
     build: .
+    # bacon (used by `nix run .#watch`) is a terminal UI, so it needs a TTY.
+    tty: true
+    stdin_open: true
     volumes:
+      # The source tree, live.
       - .:/service
-      - nix-rust-vol:/var/nix-rust-vol
+      # Persist the Nix store so the toolchain and dependencies are only
+      # downloaded once. Docker copies the image's /nix into this volume the
+      # first time it is created, so a new image tag in the Dockerfile only
+      # takes effect after `docker compose down -v`.
+      - nix-store:/nix
+      # Persist Nix's evaluation and fetcher caches too, so repeated
+      # `docker compose run` invocations do not re-download the flake inputs.
+      - nix-cache:/root/.cache/nix
+      # Persist cargo's build artifacts between runs (see CARGO_TARGET_DIR in
+      # the Dockerfile).
+      - cargo-target:/target
+
 volumes:
-  nix-rust-vol: {}
+  nix-store: {}
+  nix-cache: {}
+  cargo-target: {}
