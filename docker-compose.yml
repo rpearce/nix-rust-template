@@ -16,10 +16,12 @@ services:
       # `docker compose run` invocations do not re-download the flake inputs.
       - nix-cache:/root/.cache/nix
       # Persist cargo's build artifacts between runs (see CARGO_TARGET_DIR in
-      # the Dockerfile).
+      # the Dockerfile), plus its registry index and downloaded crates.
       - cargo-target:/target
+      - cargo-home:/root/.cargo
 
 volumes:
   nix-store: {}
   nix-cache: {}
   cargo-target: {}
+  cargo-home: {}

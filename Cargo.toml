@@ -16,7 +16,3 @@ publish = false
 
 [lints.rust]
 unsafe_code = "forbid"
-
-[lints.clippy]
-# Opinionated but useful. Remove this line for clippy's default lint set only.
-pedantic = { level = "warn", priority = -1 }

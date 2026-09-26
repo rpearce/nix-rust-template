@@ -132,6 +132,10 @@
         {
           build = package;
 
+          # Not a check by itself, but exposing the dependency build lets CI
+          # keep it as a garbage-collector root so the cache retains it.
+          deps = cargoArtifacts;
+
           clippy = craneLib.cargoClippy (
             commonArgs
             // {
@@ -144,7 +148,7 @@
             commonArgs
             // {
               inherit cargoArtifacts;
-              env.RUSTDOCFLAGS = "--deny warnings";
+              RUSTDOCFLAGS = "--deny warnings";
             }
           );
 
@@ -169,9 +173,10 @@
                   pkgs.stdenv.cc
                   toolchain
                 ];
-                # `bacon run-long` is the job to use for servers and other
+                # Defaults to bacon's `run` job. Pass another job to override,
+                # e.g. `nix run .#watch -- run-long` for servers and other
                 # long-running programs.
-                text = ''bacon run "$@"'';
+                text = ''bacon "''${@:-run}"'';
               }
             );
           };
@@ -199,7 +204,7 @@
             command = "rustfmt";
             options = [
               "--edition"
-              "2024"
+              (lib.importTOML ./Cargo.toml).package.edition
             ];
             includes = [ "*.rs" ];
           };
@@ -216,10 +221,11 @@
           Next steps:
 
           1. Rename the crate: `name`, `description` and `repository` in Cargo.toml
-          2. Update README.md (its badge and `nix flake init` line point at the
+          2. Refresh Cargo.lock to match: `nix develop --command cargo update --workspace`
+          3. Update README.md (its badge and `nix flake init` line point at the
              template), and remove or update .github/FUNDING.yml and LICENSE
-          3. `nix flake check` to build and run every check
-          4. `nix develop` (or `direnv allow`) for a shell with the toolchain
+          4. `nix flake check` to build and run every check
+          5. `nix develop` (or `direnv allow`) for a shell with the toolchain
         '';
       };
     };

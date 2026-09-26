@@ -24,7 +24,7 @@ A reasonable way to start developing a reproducible
 * **Docker, two ways.** A dev container for people without Nix, and a minimal
   production image via `nix build .#docker`.
 * **Sensible Rust defaults.** Edition 2024, `unsafe_code = "forbid"`, and
-  clippy's `pedantic` group enabled as warnings.
+  clippy with all warnings denied in the checks.
 
 ## Setup
 
@@ -36,8 +36,15 @@ Click "Use this template" on GitHub, or from an empty directory:
 nix flake init -t github:rpearce/nix-rust-template
 ```
 
-Then rename the crate in `Cargo.toml`, and remove or update
-`.github/FUNDING.yml` and `LICENSE`.
+Then rename the crate in `Cargo.toml` and refresh the lockfile to match, since
+the Nix build passes `--locked`:
+
+```sh
+nix develop --command cargo update --workspace
+```
+
+Finally, update the badge and `nix flake init` line in this README, and remove
+or update `.github/FUNDING.yml` and `LICENSE`.
 
 ### With Nix
 
@@ -102,8 +109,9 @@ servers, use `bacon run-long` instead of `bacon run`.
   `flake.nix`; the `commonArgs` comment shows where.
 * **Exact Rust version:** set `channel = "1.98.1"` (or similar) in
   `rust-toolchain.toml`. Both rustup and Nix will follow it.
-* **Fewer lints:** drop the `pedantic` line from `[lints.clippy]` in
-  `Cargo.toml`.
+* **More lints:** add a `[lints.clippy]` table to `Cargo.toml`, for example
+  `pedantic = { level = "warn", priority = -1 }`. The checks deny all
+  warnings, so anything you enable there is enforced by `nix flake check`.
 * **Intel Macs:** nixpkgs unstable no longer supports `x86_64-darwin`. The
   comment above `systems` in `flake.nix` explains how to add it back.
 

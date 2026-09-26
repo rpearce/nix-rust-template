@@ -46,7 +46,11 @@ jobs:
       - if: runner.os == 'Linux'
         run: nix build .#docker --print-build-logs
 
-      # Record the dev shell in a profile. That makes it a garbage-collector
-      # root, so the toolchain survives the store cleanup that runs before the
-      # cache is saved.
-      - run: nix develop --profile "$RUNNER_TEMP/dev-shell" --command true
+      # Make the dev shell (toolchain and tools) and the dependency build
+      # garbage-collector roots, so they survive the store cleanup that runs
+      # before the cache is saved.
+      - run: |
+          system=$(nix config show system)
+          nix build --out-link "$RUNNER_TEMP/gc-root" \
+            ".#devShells.$system.default" \
+            ".#checks.$system.deps"
